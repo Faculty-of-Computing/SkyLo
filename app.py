@@ -41,8 +41,8 @@ def index():
     weather = None
     most_frequent = None
     most_recent = None
-    if request.method == 'POST':
-        city = request.form['city']
+    if request.method == 'GET':
+        city = request.args.get('city', default='Uyo', type=str)
         from urllib.parse import quote_plus
         city_encoded = quote_plus(city)
         url = f"http://api.openweathermap.org/data/2.5/weather?q={city_encoded}&appid={API_KEY}&units=metric"
@@ -51,9 +51,13 @@ def index():
             data = response.json()
             if data.get('main') and data.get('weather'):
                 weather = {
-                    'city': city,
                     'temperature': data['main']['temp'],
                     'description': data['weather'][0]['description'],
+                    'visibility': data['visibility'],
+                    'windspeed': data['wind']['speed'],
+                    'humidity': data['main']['humidity'],
+                    'pressure': data['main']['pressure'],
+                    'city': data['name'],
                     'icon': data['weather'][0]['icon']
                 }
                 # Store search in DB
@@ -82,8 +86,9 @@ def index():
     row = cur.fetchone()
     most_recent = row[0] if row else None
     cur.close()
-    return render_template('index.html', weather=weather)
+    return render_template('home.html', weather=weather)
 
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
+    
