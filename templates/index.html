@@ -1,148 +1,59 @@
-<!DOCTYPE html>
+<!Doctype html>
 <html>
-<head>
-    <title>Weather App</title>
+    <head>
+        <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #232526 0%, #414345 100%);
-            color: #fff;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        h1 {
-            margin-top: 40px;
-            margin-bottom: 20px;
-            font-size: 2.5rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-        form {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto 24px auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        input {
-            padding: 16px;
-            width: 100%;
-            max-width: 350px;
-            font-size: 1.2rem;
-            border-radius: 14px;
-            border: none;
-            margin-bottom: 0;
-            text-align: center;
-            background: #222;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        input:focus {
-            outline: 2px solid #4CAF50;
-        }
-        button {
-            padding: 14px 32px;
-            border-radius: 24px;
-            background: linear-gradient(90deg, #4CAF50 60%, #388E3C 100%);
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(76,175,80,0.15);
-            transition: background 0.2s;
-        }
-        button:hover {
-            background: linear-gradient(90deg, #388E3C 0%, #4CAF50 100%);
-        }
-        .weather {
-            margin-top: 20px;
-            padding: 28px 16px;
-            border-radius: 18px;
-            background: rgba(30,30,30,0.85);
-            box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-            width: 95vw;
-            max-width: 420px;
-            margin-left: auto;
-            margin-right: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .weather h2 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-        .weather p {
-            font-size: 1.3rem;
-            margin: 6px 0;
-        }
-        img {
-            width: 110px;
-            height: 110px;
-        }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.6rem;
-                margin-top: 18px;
-            }
-            form {
-                max-width: 98vw;
-            }
-            input {
-                width: 99%;
-                font-size: 1.08rem;
-                padding: 12px;
-            }
-            button {
-                font-size: 1.08rem;
-                padding: 10px 18px;
-            }
-            .weather {
-                padding: 18px 4px;
-                max-width: 99vw;
-            }
-            .weather h2 {
-                font-size: 1.3rem;
-            }
-            .weather p {
-                font-size: 1.08rem;
-            }
-            img {
-                width: 70px;
-                height: 70px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <h1>Weather App</h1>
-    <form method="post">
-        <input type="text" name="city" placeholder="Enter city name" required>
-        <button type="submit">Check Weather</button>
-    </form>
-
-    <!-- Most recent search is now only stored in the database and not shown to the user -->
-
-    {% if weather %}
-        <div class="weather">
-            {% if weather.error %}
-                <p>{{ weather.error }}</p>
-            {% else %}
-                <h2>{{ weather.city }}</h2>
-                <p>{{ weather.temperature }}°C</p>
-                <p>{{ weather.description }}</p>
-                <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
-            {% endif %}
-        </div>
-    {% endif %}
-</body>
+    <title>Weather App</title>
+    <link rel="stylesheet" href={{url_for('static', filename='css/style.css')}}>
+    
+    </head>
+    <body>
+         <main>
+             <div class="weather-app">
+                 <form method="get" action="/">
+                     <div class="input-group">
+                         <input type="search" name="city" id="city" value="" placeholder="City" />
+                     </div>
+                 </form>
+                 {% if weather %}
+                 <div class="weather">
+                     <div class="temperature">
+                         <span class="num">{{weather.temperature}}</span><span class="metrics">°C</span>
+                         <img class="icon" src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="icon" width="200" height="200"/>
+                     </div>
+                     
+                     <div class="weather-details">
+                         <div class="city-desc">
+                             <p class="city">
+                                 <img class="pin" src="../static/img/map.png" alt="pin" width="30" height="30" />
+                                 <span>{{weather.city}}</span>
+                             </p>
+                             <p class="desc">{{weather.description}}</p>
+                         </div>
+                         
+                         <div class="details">
+                             <div class="hbox">
+                                 <p>Visibility</p>
+                                 <p>{{weather.visibility}}m</p>
+                             </div>
+                             <div class="hbox">
+                                 <p>Wind Speed</p>
+                                 <p>{{weather.windspeed}}km</p>
+                             </div>
+                             <div class="hbox">
+                                 <p>Pressure</p>
+                                 <p>{{weather.pressure}}Pa</p>
+                             </div>
+                             <div class="hbox">
+                                 <p>Humidity</p>
+                                 <p>{{weather.humidity}}%</p>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 {% endif %}
+             </div>
+         </main>
+    </body>
+    
 </html>
