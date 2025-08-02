@@ -143,8 +143,13 @@ def index():
             print(e)
             weather = {'error': 'Unexpected exception'}
             return render_template("index.html", weather=weather)
-            
-        
+
+
+@app.route('/images/<path:filename>')
+def image_handler(filename):
+    return serve_from_directory('static/img', filename)
+
+
 
 if __name__ == '__main__':
     init_db()
