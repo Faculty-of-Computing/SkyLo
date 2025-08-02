@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href={{url_for('static', filename='css/style.css')}}>
+    <style>
+        body {
+            background-image: url({{url_for('static', filename='img/coastal.jpg')}});
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            background-size: cover;
+    
+        }
+    </style>
     
     </head>
     <body>
@@ -19,13 +29,14 @@
                  <div class="weather">
                      <div class="temperature">
                          <span class="num">{{weather.temperature}}</span><span class="metrics">°C</span>
-                         <img class="icon" src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="icon" width="200" height="200"/>
+                         
+                         <img class="icon" src="../static/img/{{weather.icon}}.png" alt={{weather.description}} width="200" height="200"/>
                      </div>
                      
                      <div class="weather-details">
                          <div class="city-desc">
                              <p class="city">
-                                 <img class="pin" src="../static/img/map.png" alt="pin" width="30" height="30" />
+                                 <img class="pin" src={{url_for('static', filename='/img/map.png')}} alt="pin" width="30" height="30" />
                                  <span>{{weather.city}}</span>
                              </p>
                              <p class="desc">{{weather.description}}</p>
@@ -42,7 +53,7 @@
                              </div>
                              <div class="hbox">
                                  <p>Pressure</p>
-                                 <p>{{weather.pressure}}Pa</p>
+                                 <p>{{weather.pressure}} Pa</p>
                              </div>
                              <div class="hbox">
                                  <p>Humidity</p>
@@ -54,6 +65,7 @@
                  {% endif %}
              </div>
          </main>
+         
     </body>
     
-</html>
+    </html>
