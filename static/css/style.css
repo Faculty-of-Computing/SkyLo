@@ -1,3 +1,49 @@
+/* Style for the search button */
+.search-btn {
+    background: none;
+    color: #e8eff6;
+    border: none;
+    border-radius: 25px 25px 25px 25px;
+    padding: 0.5em 1.5em;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 8px rgba(30,144,255,0.08);
+    outline: none;
+    height: 40px;
+    margin-left: -4px;
+}
+
+.search-btn:hover {
+    background: rgba(237, 238, 239, 0.25);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(30,144,255,0.15);
+}
+
+/* Style input group to align button to the right */
+.input-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 2em auto;
+    background: #f9e9e9c1;
+    border-radius: 25px;
+    box-shadow: none;
+    padding: 4px 8px;
+}
+
+.input-group input[type="search"] {
+    flex: 1;
+    border: none;
+    border-radius: 25px 25px 25px 25px;
+    padding: 0.5em 1em;
+    margin-right: 1em;
+    font-size: 1em;
+    outline: none;
+    height: 40px;
+    background: transparent;
+}
 * {
    margin: 0;
    padding: 0;
@@ -29,7 +75,7 @@ main {
     font-weight: 400;
     border: 2px solid #FAFAFA;
     outline: none;
-    background: none;
+    background: #938080c1;
     color: #FAFAFA;
 }
 ::placeholder {
@@ -65,7 +111,7 @@ main {
     width: 200px;
     height: 200px;
     position: absolute;
-    top: 5rem;
+    top: 8rem;
     left: 0;
     right: 0;
     margin: auto;
@@ -74,7 +120,7 @@ main {
 }
 
 .weather-details {
-    margin-top: 10rem;
+    margin-top: 12rem;
 }
 .city-desc {
     display: flex;

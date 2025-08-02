@@ -71,10 +71,20 @@ def close_connection(exception):
 @app.route('/', methods=['GET'])
 def index():
     weather = None
-    
+    # Get user's city from IP if not provided
     if request.method == 'GET':
-        city = request.args.get('city', default='Uyo', type=str)
-        
+        city = request.args.get('city', type=str)
+        if not city:
+            try:
+                ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+                geo_resp = requests.get(f'http://ip-api.com/json/{ip}')
+                if geo_resp.status_code == 200:
+                    geo_data = geo_resp.json()
+                    city = geo_data.get('city', 'Uyo')
+                else:
+                    city = 'Uyo'
+            except Exception:
+                city = 'Uyo'
         try:
             conn = sqlite3.connect("weather.db")
             cursor = conn.cursor()

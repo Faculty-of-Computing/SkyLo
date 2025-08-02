@@ -5,38 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href={{url_for('static', filename='css/style.css')}}>
-    <style>
-        body {
-            background-image: url({{url_for('static', filename='img/coastal.jpg')}});
-            background-repeat: no-repeat;
-            background-position: center;
-            background-attachment: fixed;
-            background-size: cover;
-    
-        }
-    </style>
+    <!-- Removed inline style block for body. Styles moved to body tag. -->
     
     </head>
-    <body>
+    <body style="background-image: url('{{ url_for('static', filename='img/coastal.jpg') }}'); background-repeat: no-repeat; background-position: center center; background-attachment: fixed; background-size: cover; min-height: 100vh; margin: 0; font-family: Arial, Helvetica, sans-serif; color: #222;">
          <main>
              <div class="weather-app">
                  <form method="get" action="/">
                      <div class="input-group">
                          <input type="search" name="city" id="city" value="" placeholder="City" />
+                         <button type="submit" class="search-btn">Search</button>
                      </div>
                  </form>
                  {% if weather %}
                  <div class="weather">
                      <div class="temperature">
                          <span class="num">{{weather.temperature}}</span><span class="metrics">°C</span>
-                         
-                         <img class="icon" src="image/{{weather.icon}}.png" alt={{weather.description}} width="200" height="200"/>
+                         <img class="icon" src={{url_for('static', filename='img/' + weather.icon + '.png')}} alt="{{weather.description}}" width="200" height="200"/>
                      </div>
                      
                      <div class="weather-details">
                          <div class="city-desc">
                              <p class="city">
-                                 <img class="pin" src={{url_for('static', filename='/img/map.png')}} alt="pin" width="30" height="30" />
+                                 <img class="pin" src={{url_for('static', filename='img/map.png')}} alt="pin" width="30" height="30" />
                                  <span>{{weather.city}}</span>
                              </p>
                              <p class="desc">{{weather.description}}</p>
