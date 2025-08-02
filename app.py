@@ -141,7 +141,7 @@ def index():
         
         except Exception as e:
             print(e)
-            #weather = {'error': 'Unexpected exception'}
+            weather = {'error': 'Unexpected exception'}
             return render_template("index.html", weather=weather)
             
         
