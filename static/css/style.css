@@ -121,3 +121,15 @@ main {
 .hbox:not(last-child) {
     border-bottom: 2px dotted #F0F0F0;
 }
+@media screen and (min-width: 780px) {
+   .weather {
+      width: 450px;
+   }
+   .city-desc {
+      margin-bottom: 3rem;
+      font-size: 1.3rem;
+   }
+   .desc {
+      justify-self: start;
+   }
+}
