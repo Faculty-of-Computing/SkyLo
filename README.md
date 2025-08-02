@@ -1,3 +1,7 @@
+# Group_4 Project:  Weather Web Application.
+
+## Problem Statement: Create a web-based weather application that displays current weather conditions and forecasts for a given location.
+
 # Weather Web Application
 
 A web-based weather application that allows users to view current weather conditions and forecasts for any location. Built by Group 4 as part of the Faculty of Computing project.
@@ -38,7 +42,7 @@ A web-based weather application that allows users to view current weather condit
 
 ## Database
 
-- `weather_searches.db` stores search history and statistics
+- `weather.db` stores search history and statistics
 
 ## License
 
