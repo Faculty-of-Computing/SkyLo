@@ -115,9 +115,14 @@ def index():
             city_encoded = quote_plus(city)
             url = f"http://api.openweathermap.org/data/2.5/weather?q={city_encoded}&appid={API_KEY}&units=metric"
             response = requests.get(url)
-        
+
             if response.status_code == 200:
                 data = response.json()
+                # Check if the response is for a country, not a city
+                if data.get('sys') and not data.get('main'):
+                    weather = { 'error': 'City not a Country' }
+                    conn.close()
+                    return render_template("index.html", weather=weather)
                 if data.get('main') and data.get('weather'):
                     weather = {
                         'temperature': data['main']['temp'],
@@ -129,7 +134,6 @@ def index():
                         'city': data['name'],
                         'icon': get_cloud(data['weather'][0]['icon'])
                     }
-                    
                     cursor.execute('''
                         INSERT OR REPLACE INTO weather (city, temperature, description, humidity, windspeed, pressure, visibility, icon, last_updated) 
                         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -137,16 +141,14 @@ def index():
 
                     conn.commit()
                     conn.close()
-        
                     return render_template("index.html", weather=weather)
-        
-               
                 else:
-                    weather = { 'error': 'Weather data not found' }
+                    weather = { 'error': 'City not Found' }
+                    conn.close()
                     return render_template("index.html", weather=weather)
             else:
-                msg = 'City not found'
-                weather = { 'error': msg }
+                weather = { 'error': 'City not Found' }
+                conn.close()
                 return render_template("index.html", weather=weather)
         
         except Exception as e:

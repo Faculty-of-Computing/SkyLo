@@ -21,7 +21,9 @@
                  <div class="weather">
                      <div class="temperature">
                          <span class="num">{{weather.temperature}}</span><span class="metrics">°C</span>
+                         {% if weather.icon %}
                          <img class="icon" src={{url_for('static', filename='img/' + weather.icon + '.png')}} alt="{{weather.description}}" width="200" height="200"/>
+                         {% endif %}
                      </div>
                      
                      <div class="weather-details">
