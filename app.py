@@ -1,9 +1,9 @@
 
-from flask import Flask, render_template, request, g
-import requests
 import sqlite3
 import time
 
+import requests
+from flask import Flask, g, render_template, request, send_from_directory
 
 app = Flask(__name__)
 API_KEY = "ef0cc4d3880644acbd65f6218a3beed6"
@@ -159,7 +159,7 @@ def index():
 
 @app.route('/images/<path:filename>')
 def image_handler(filename):
-    return serve_from_directory('static/img', filename)
+    return send_from_directory('static/img', filename)
 
 
 
