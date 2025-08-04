@@ -191,3 +191,53 @@ main {
       justify-self: start;
    }
 }
+
+.error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.error-icon {
+    width: 250px;
+    height: 250px;;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: icon 10000ms linear infinite both;
+}
+
+.error p {
+    font-size: 1.5rem;
+    color: #ff1313;
+    text-align: center;
+    width: 100%;
+    
+}
+
+@media screen and (max-width: 780px) {
+    .error-icon {
+        width: 174px;
+        height: auto;
+    }
+    .temperature .icon {
+        width: 150px;
+        height: 150px;
+        top: 5rem;
+    }
+    .temperature .num {
+        font-size: 4rem;
+    }
+    .temperature .metrics {
+        font-size: 2rem;
+    }
+    .city-desc {
+        font-size: 1.2rem;
+    }
+    .error p {
+        font-size: 1.2rem;
+        width: 100%;
+    }
+    
+}

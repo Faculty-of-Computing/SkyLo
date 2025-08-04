@@ -58,7 +58,11 @@
                  {% endif %}
                  <div class="error">
                      {% if weather and weather.error %}
-                     <p>{{ weather.error }}</p>
+                     <div class="icon-err">
+                         <img class="error-icon" src={{url_for('static', filename='img/bad-weather.png')}} alt="error" width="200" height="200"/>
+                         <p>Oops! something went wrong, try again</p>
+                       </div>
+                     
                      {% endif %}
                  </div>
              </div>

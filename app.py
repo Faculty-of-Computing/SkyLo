@@ -109,7 +109,7 @@ def index():
                     conn.close()
                     return render_template("index.html", weather=weather)
             
-            # city not in database on not searched with the 
+            # city not in database and not searched within the 
             # last 30 minutes, get weather report from API
             from urllib.parse import quote_plus
             city_encoded = quote_plus(city)
