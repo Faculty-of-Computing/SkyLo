@@ -17,7 +17,7 @@
                          <button type="submit" class="search-btn">Search</button>
                      </div>
                  </form>
-                 {% if weather %}
+                 {% if weather and not weather.error %}
                  <div class="weather">
                      <div class="temperature">
                          <span class="num">{{weather.temperature}}</span><span class="metrics">°C</span>
@@ -56,6 +56,11 @@
                      </div>
                  </div>
                  {% endif %}
+                 <div class="error">
+                     {% if weather and weather.error %}
+                     <p>{{ weather.error }}</p>
+                     {% endif %}
+                 </div>
              </div>
          </main>
          

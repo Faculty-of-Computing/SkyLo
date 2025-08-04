@@ -120,7 +120,7 @@ def index():
                 data = response.json()
                 # Check if the response is for a country, not a city
                 if data.get('sys') and not data.get('main'):
-                    weather = { 'error': 'City not a Country' }
+                    weather = { 'error': 'This is not a valid city' }
                     conn.close()
                     return render_template("index.html", weather=weather)
                 if data.get('main') and data.get('weather'):
