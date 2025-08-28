@@ -1,112 +1,147 @@
-/* Style for the search button */
-.search-btn {
-    background: none;
-    color: #e8eff6;
-    border: none;
-    border-radius: 25px 25px 25px 25px;
-    padding: 0.5em 1.5em;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background 0.3s, box-shadow 0.3s;
-    box-shadow: 0 2px 8px rgba(30,144,255,0.08);
-    outline: none;
-    height: 40px;
-    margin-left: -4px;
-}
-
-.search-btn:hover {
-    background: rgba(237, 238, 239, 0.25);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(30,144,255,0.15);
-}
-
-/* Style input group to align button to the right */
-.input-group {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto 2em auto;
-    background: #f9e9e9c1;
-    border-radius: 25px;
-    box-shadow: none;
-    padding: 4px 8px;
-}
-
-.input-group input[type="search"] {
-    flex: 1;
-    border: none;
-    border-radius: 25px 25px 25px 25px;
-    padding: 0.5em 1em;
-    margin-right: 1em;
-    font-size: 1em;
-    outline: none;
-    height: 40px;
-    background: transparent;
-}
+/* Global Reset and Base Styles */
 * {
-   margin: 0;
-   padding: 0;
-   font-family: Arial, Sans-Serif;
-   font-optical-sizing: auto;
-   font-style: normal;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Sans-Serif;
+    font-optical-sizing: auto;
+    font-style: normal;
 }
 
-main {
-    padding: 4rem;
-}
-
-.weather-app {
+/* Common Body Styles for All Pages */
+body {
+    background-image: url('/static/img/coastal.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    min-height: 100vh;
+    color: #222;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
-.input-group {
-    min-width: 300px;
-    
-}
-.input-group input {
+
+/* Main Container */
+main {
+    padding: 2rem;
     width: 100%;
-    height: 3rem;
-    padding: 10px 20px 10px 20px;
-    border-radius: 50px;
-    font-size: 1.5rem;
-    font-weight: 400;
-    border: 2px solid #FAFAFA;
-    outline: none;
-    background: #938080c1;
-    color: #FAFAFA;
+    max-width: 600px;
+    margin: 0 auto;
 }
-::placeholder {
+
+/* Weather App Container (Index Page) */
+.weather-app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Input Group (Search, Login, Signup) */
+.input-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 1.5rem auto;
+    background: #938080c1;
+    border-radius: 25px;
+    padding: 4px 8px;
+}
+
+.input-group input[type="search"],
+.input-group input[type="text"],
+.input-group input[type="password"] {
+    flex: 1;
+    border: none;
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    outline: none;
+    background: transparent;
+    color: #FAFAFA;
+    height: 40px;
+}
+
+.input-group input::placeholder {
     color: #F0F0F0c1;
 }
 
-.weather {
-    position: relative;
-    width: 300px;
-    height: 500px;
-    margin: 3rem 0;
-    border-radius: 20px;
-    color: #f9f7f6;
-    /*background-color: #F0F0F0a1;*/
+/* Button Styles (Search, Login, Signup, Logout) */
+.search-btn, .login-btn, .signup-btn, .logout-btn {
+    background: none;
+    color: #e8eff6;
+    border: none;
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 8px rgba(30, 144, 255, 0.08);
+    outline: none;
+    height: 40px;
 }
 
+.search-btn, .login-btn, .signup-btn {
+    background: #007bff;
+}
+
+.logout-btn {
+    background: #dc3545;
+    margin-top: 1.5rem;
+    z-index: 1000;
+}
+
+.search-btn:hover, .login-btn:hover, .signup-btn:hover {
+    background: #0056b3;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(30, 144, 255, 0.15);
+}
+
+.logout-btn:hover {
+    background: #c82333;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.15);
+}
+
+/* Weather Display */
+.weather {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    height: 500px;
+    margin: 2rem 0;
+    border-radius: 20px;
+    color: #f9f7f6;
+    /* background: rgba(255, 255, 255, 0.2); */
+}
+
+/* Temperature Display */
 .temperature {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1rem;
 }
+
 .temperature .num {
     font-weight: 200;
     font-size: 5.5rem;
 }
+
 .temperature .metrics {
     font-weight: 300;
     font-size: 2.5rem;
-    align-self: start;
+    align-self: flex-start;
 }
+
 .temperature .icon {
     width: 200px;
     height: 200px;
@@ -119,51 +154,31 @@ main {
     animation: icon 10000ms linear infinite both;
 }
 
+/* Weather Details */
 .weather-details {
     margin-top: 12rem;
 }
+
 .city-desc {
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: flex-start;
     border-bottom: 1px dotted #F0F0F0;
     font-size: 1.5rem;
     padding: 1rem;
     border-radius: 10px;
 }
+
 .city {
     display: flex;
     justify-content: center;
     align-items: center;
     padding-right: 1rem;
 }
+
 .desc {
     border-left: 1px dotted #F0F0F0;
     padding-left: 1rem;
-}
-.error{
-    background-color: transparent;
-    color: red;
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 600;
-    width: 30%;
-    margin-top: 1rem;
-    padding: 5px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-@keyframes icon {
-    0% {
-        transform: translateX(-30px);
-    }
-    50% {
-        transform: translateX(30px);
-    }
-    100% {
-        transform: translateX(-30px);
-    }
 }
 
 .details {
@@ -176,68 +191,201 @@ main {
     align-items: center;
     padding: 1rem 0;
 }
-.hbox:not(last-child) {
+
+.hbox:not(:last-child) {
     border-bottom: 2px dotted #F0F0F0;
 }
-@media screen and (min-width: 780px) {
-   .weather {
-      width: 450px;
-   }
-   .city-desc {
-      margin-bottom: 3rem;
-      font-size: 1.3rem;
-   }
-   .desc {
-      justify-self: start;
-   }
-}
 
+/* Error Messages */
 .error {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    background: transparent;
+    color: #ff1313;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .error-icon {
     width: 250px;
-    height: 250px;;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 250px;
     animation: icon 10000ms linear infinite both;
 }
 
-.error p {
-    font-size: 1.5rem;
-    color: #ff1313;
+/* Flash Messages */
+.flash-messages p.success {
+    color: #28a745;
     text-align: center;
-    width: 100%;
-    
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
 }
 
-@media screen and (max-width: 780px) {
-    .error-icon {
-        width: 174px;
-        height: auto;
+.flash-messages p.info {
+    color: #17a2b8;
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* Welcome Message */
+.welcome {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.welcome h2 {
+    font-size: 1.8rem;
+    color: #f9f7f6;
+}
+
+/* Login and Signup Forms */
+.login-form, .signup-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+.login-form h2, .signup-form h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #222;
+}
+
+.login-form .error, .signup-form .error {
+    color: #ff1313;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.login-form a, .signup-form a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.login-form a:hover, .signup-form a:hover {
+    text-decoration: underline;
+}
+
+/* Logout Section */
+.logout {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+/* Screen Reader Only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* Animation for Icons */
+@keyframes icon {
+    0% {
+        transform: translateX(-30px);
     }
+    50% {
+        transform: translateX(30px);
+    }
+    100% {
+        transform: translateX(-30px);
+    }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 780px) {
+    main {
+        padding: 1rem;
+    }
+
+    .weather-app, .login-form, .signup-form {
+        padding: 1rem;
+        max-width: 100%;
+    }
+
+    .weather {
+        width: 100%;
+        max-width: 300px;
+        height: 400px;
+    }
+
+    .temperature .num {
+        font-size: 4rem;
+    }
+
+    .temperature .metrics {
+        font-size: 2rem;
+    }
+
     .temperature .icon {
         width: 150px;
         height: 150px;
         top: 5rem;
     }
-    .temperature .num {
-        font-size: 4rem;
+
+    .weather-details {
+        margin-top: 9rem;
     }
-    .temperature .metrics {
-        font-size: 2rem;
-    }
+
     .city-desc {
         font-size: 1.2rem;
     }
+
+    .error-icon {
+        width: 174px;
+        height: auto;
+    }
+
     .error p {
         font-size: 1.2rem;
-        width: 100%;
     }
-    
+
+    .input-group {
+        max-width: 300px;
+    }
+
+    .input-group input {
+        font-size: 1rem;
+        height: 2.5rem;
+    }
+
+    .search-btn, .login-btn, .signup-btn, .logout-btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 1rem;
+        height: 35px;
+    }
+}
+
+@media screen and (min-width: 780px) {
+    .weather {
+        width: 450px;
+    }
+
+    .city-desc {
+        margin-bottom: 3rem;
+        font-size: 1.3rem;
+    }
 }

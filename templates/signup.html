@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Weather App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+<body>
+    <main>
+        <div class="signup-form">
+            <h2>Sign Up</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div role="alert" class="flash-messages">
+                        {% for category, message in messages %}
+                            <p class="{{ category }}">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% if error %}
+                <p class="error" role="alert">{{ error }}</p>
+            {% endif %}
+            <form method="POST" action="{{ url_for('signup') }}" aria-label="Sign up form">
+                <div class="input-group">
+                    <label for="username" class="sr-only">Username</label>
+                    <input type="text" name="username" id="username" placeholder="Username" required aria-label="Username" />
+                </div>
+                <div class="input-group">
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Password" required aria-label="Password" />
+                </div>
+                <button type="submit" class="signup-btn" aria-label="Sign up">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+        </div>
+    </main>
+</body>
+</html>

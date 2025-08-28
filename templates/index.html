@@ -1,73 +1,110 @@
-<!Doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
-    <link rel="stylesheet" href={{url_for('static', filename='css/style.css')}}>
-    <!-- Removed inline style block for body. Styles moved to body tag. -->
-    
-    </head>
-    <body style="background-image: url('{{ url_for('static', filename='img/coastal.jpg') }}'); background-repeat: no-repeat; background-position: center center; background-attachment: fixed; background-size: cover; min-height: 100vh; margin: 0; font-family: Arial, Helvetica, sans-serif; color: #222;">
-         <main>
-             <div class="weather-app">
-                 <form method="get" action="/">
-                     <div class="input-group">
-                         <input type="search" name="city" id="city" value="" placeholder="City" />
-                         <button type="submit" class="search-btn">Search</button>
-                     </div>
-                 </form>
-                 {% if weather and not weather.error %}
-                 <div class="weather">
-                     <div class="temperature">
-                         <span class="num">{{weather.temperature}}</span><span class="metrics">°C</span>
-                         {% if weather.icon %}
-                         <img class="icon" src={{url_for('static', filename='img/' + weather.icon + '.png')}} alt="{{weather.description}}" width="200" height="200"/>
-                         {% endif %}
-                     </div>
-                     
-                     <div class="weather-details">
-                         <div class="city-desc">
-                             <p class="city">
-                                 <img class="pin" src={{url_for('static', filename='img/map.png')}} alt="pin" width="30" height="30" />
-                                 <span>{{weather.city}}</span>
-                             </p>
-                             <p class="desc">{{weather.description}}</p>
-                         </div>
-                         
-                         <div class="details">
-                             <div class="hbox">
-                                 <p>Visibility</p>
-                                 <p>{{weather.visibility}}m</p>
-                             </div>
-                             <div class="hbox">
-                                 <p>Wind Speed</p>
-                                 <p>{{weather.windspeed}}km</p>
-                             </div>
-                             <div class="hbox">
-                                 <p>Pressure</p>
-                                 <p>{{weather.pressure}} Pa</p>
-                             </div>
-                             <div class="hbox">
-                                 <p>Humidity</p>
-                                 <p>{{weather.humidity}}%</p>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-                 {% endif %}
-                 <div class="error">
-                     {% if weather and weather.error %}
-                     <div class="icon-err">
-                         <img class="error-icon" src={{url_for('static', filename='img/bad-weather.png')}} alt="error" width="200" height="200"/>
-                         <p>Oops! something went wrong, try again</p>
-                       </div>
-                     
-                     {% endif %}
-                 </div>
-             </div>
-         </main>
-         
-    </body>
-    
-    </html>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+<body>
+    <main>
+        <!-- <div class="weather-app"> -->
+            <!-- Welcome message -->
+            {% if username %}
+                <div class="welcome">
+                    <h2>Welcome: {{ username|default('Guest') }}</h2>
+                </div>
+            {% endif %}
+
+            <!-- Display flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div role="alert" class="flash-messages">
+                        {% for category, message in messages %}
+                            <p class="{{ category }}">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Search form -->
+            <form method="GET" action="{{ url_for('index') }}" aria-label="Weather search form">
+                <div class="input-group">
+
+                    <input type="search" name="city" id="city" value="{{ request.args.get('city', '') }}" placeholder="Enter city name" aria-label="City name" required />
+                    <button type="submit" class="search-btn" aria-label="Search for city weather">Search</button>
+                </div>
+            </form>
+
+            <!-- Weather display -->
+            {% if weather and weather.error %}
+                <div class="error" role="alert">
+                    <div class="icon-err">
+                        <img class="error-icon" src="{{ url_for('static', filename='img/bad-weather.png') }}" alt="Weather error" onerror="this.src='{{ url_for('static', filename='img/cloudy.png') }}'; console.log('Fallback image loaded for error icon');" />
+                        <p>{{ weather.error }}</p>
+                    </div>
+                </div>
+            {% elif weather %}
+                <div class="weather">
+                    <div class="temperature">
+                        <span class="num">{{ weather.temperature|default(0)|round(1) }}</span><span class="metrics">°C</span>
+                        {% if weather.icon %}
+                            <img class="icon" src="{{ url_for('static', filename='img/' + weather.icon + '.png') }}" alt="Weather condition: {{ weather.description|default('Unknown') }}" onerror="this.src='{{ url_for('static', filename='img/cloudy.png') }}'; console.log('Fallback image loaded for weather icon');" />
+                        {% endif %}
+                    </div>
+                    <div class="weather-details">
+                        <div class="city-desc">
+                            <p class="city">
+                                <img class="pin" src="{{ url_for('static', filename='img/map.png') }}" alt="Location pin" onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/cloudy.png') }}'; console.log('Fallback image loaded for map pin');" />
+                                <span>{{ weather.city|default('Unknown City') }}</span>
+                            </p>
+                            <p class="desc">{{ weather.description|default('No description') }}</p>
+                        </div>
+                        <div class="details">
+                            <div class="hbox">
+                                <p>Visibility</p>
+                                <p>{{ weather.visibility|default(0)|round(2) }} km</p>
+                            </div>
+                            <div class="hbox">
+                                <p>Wind Speed</p>
+                                <p>{{ weather.windspeed|default(0)|round(2) }} m/s</p>
+                            </div>
+                            <div class="hbox">
+                                <p>Pressure</p>
+                                <p>{{ weather.pressure|default(0) }} hPa</p>
+                            </div>
+                            <div class="hbox">
+                                <p>Humidity</p>
+                                <p>{{ weather.humidity|default(0) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="error" role="alert">
+                    <div class="icon-err">
+                        <img class="error-icon" src="{{ url_for('static', filename='img/bad-weather.png') }}" alt="Weather error" onerror="this.src='{{ url_for('static', filename='img/cloudy.png') }}'; console.log('Fallback image loaded for error icon');" />
+                        <p>No weather data available. Please try searching for a city.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Logout button -->
+            <div class="logout">
+                <a href="{{ url_for('logout') }}" class="logout-btn" data-test="logout-button" onclick="console.log('Logout button clicked, navigating to /logout')">Logout</a>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.querySelector('.logout-btn').addEventListener('click', function(event) {
+            console.log('Logout button clicked, navigating to /logout');
+            event.preventDefault(); // Prevent default navigation to log manually
+            window.location.href = '{{ url_for('logout') }}';
+        });
+        console.log('Index page loaded with weather:', '{{ weather|tojson|safe }}', 'username:', '{{ username|safe }}');
+    </script>
+</body>
+</html>
