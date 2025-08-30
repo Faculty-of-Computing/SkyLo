@@ -59,8 +59,8 @@ form {
 }
 
 main {
-    padding: 4rem;
-    min-height: 80vh
+    padding: 1rem;
+    min-height: 65vh
 }
 
 .input-group {
@@ -79,6 +79,10 @@ main {
     }
     .form-group input {
         width: 300;
+    }
+    
+    main {
+        min-height: 75vh
     }
 }
 
