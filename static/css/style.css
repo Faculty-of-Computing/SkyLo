@@ -1,158 +1,164 @@
-/* Style for the search button */
-.search-btn {
-    background: none;
-    color: #e8eff6;
-    border: none;
-    border-radius: 25px 25px 25px 25px;
-    padding: 0.5em 1.5em;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background 0.3s, box-shadow 0.3s;
-    box-shadow: 0 2px 8px rgba(30,144,255,0.08);
-    outline: none;
-    height: 40px;
-    margin-left: -4px;
-}
-
-.search-btn:hover {
-    background: rgba(237, 238, 239, 0.25);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(30,144,255,0.15);
-}
-
-/* Style input group to align button to the right */
-.input-group {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto 2em auto;
-    background: #f9e9e9c1;
-    border-radius: 25px;
-    box-shadow: none;
-    padding: 4px 8px;
-}
-
-.input-group input[type="search"] {
-    flex: 1;
-    border: none;
-    border-radius: 25px 25px 25px 25px;
-    padding: 0.5em 1em;
-    margin-right: 1em;
-    font-size: 1em;
-    outline: none;
-    height: 40px;
-    background: transparent;
+html,
+body {
+    padding: 0;
+    margin: 0;
 }
 * {
-   margin: 0;
-   padding: 0;
+   box-sizing: border-box;
    font-family: Arial, Sans-Serif;
    font-optical-sizing: auto;
    font-style: normal;
 }
-
-main {
-    padding: 4rem;
+body {
+    background: #b5d1e5;
 }
 
-.weather-app {
+header {
+    padding: 1rem 2rem 1rem 2rem;
+    background: #b5d1e5;
+    
+}
+form {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
 }
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid #8a8a9f;
+    width: 300px;
+    border-radius: 100px;
+}
+
+.form-group input {
+    width: 250px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 100px;
+    border: none;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    background: none;
+}
+.form-group input:focus {
+    outline: none;
+    background: none;
+}
+.form-group button {
+/*    background: #ededed;*/
+    background: #8a8a9f;
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main {
+    padding: 4rem;
+    min-height: 80vh
+}
+
 .input-group {
     min-width: 300px;
     
 }
 .input-group input {
-    width: 100%;
-    height: 3rem;
-    padding: 10px 20px 10px 20px;
-    border-radius: 50px;
-    font-size: 1.5rem;
-    font-weight: 400;
-    border: 2px solid #FAFAFA;
-    outline: none;
-    background: #938080c1;
-    color: #FAFAFA;
+    
 }
 ::placeholder {
-    color: #F0F0F0c1;
+/*    color: #F0F0F0c1;*/
+}
+@media screen and (min-width: 780px) {
+    .form-group {
+        min-width: 400px;
+    }
+    .form-group input {
+        width: 300;
+    }
 }
 
-.weather {
-    position: relative;
-    width: 300px;
-    height: 500px;
-    margin: 3rem 0;
-    border-radius: 20px;
-    color: #f9f7f6;
-    /*background-color: #F0F0F0a1;*/
-}
-
-.temperature {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-}
-.temperature .num {
-    font-weight: 200;
-    font-size: 5.5rem;
-}
-.temperature .metrics {
-    font-weight: 300;
-    font-size: 2.5rem;
-    align-self: start;
-}
-.temperature .icon {
-    width: 200px;
-    height: 200px;
-    position: absolute;
-    top: 8rem;
-    left: 0;
-    right: 0;
-    margin: auto;
-    z-index: -1;
+ .icon {
+    width: 150px;
+    height: 150px;
     animation: icon 10000ms linear infinite both;
 }
 
-.weather-details {
-    margin-top: 12rem;
-}
-.city-desc {
+.popup-inner {
     display: flex;
-    justify-content: space-between;
-    align-items: start;
-    border-bottom: 1px dotted #F0F0F0;
-    font-size: 1.5rem;
-    padding: 1rem;
-    border-radius: 10px;
-}
-.city {
-    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-right: 1rem;
 }
-.desc {
-    border-left: 1px dotted #F0F0F0;
-    padding-left: 1rem;
-}
-.error{
-    background-color: transparent;
-    color: red;
+.popup-temp {
+    font-size:3rem; 
+    font-weight: 100; 
     text-align: center;
-    font-size: 2rem;
-    font-weight: 600;
-    width: 30%;
-    margin-top: 1rem;
-    padding: 5px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-block-end: 0;
+    margin-block-start:0;
+    color: #2d5f83;
 }
+.popup-desc {
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.leaflet-popup-content p {
+    margin: 0 !important;
+}
+
+
+footer {
+/*    padding: 1rem;*/
+}
+
+.details {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1rem;
+        
+}
+.hbox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    min-width: 100px;
+    min-height: 50px;
+    font-size: 0.8rem;
+    background: #FFFFFF;
+    padding: 0.2rem;
+    border-radius: 5px;
+    box-shadow: 0px 2px 1px #8a8a9f;
+}
+.hbox p {
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    color: #2d5f83;
+}
+
+@media screen and (min-width: 780px) {
+    .hbox {
+        min-width: 150px;
+    }
+}
+
+.popup {
+    background: #a0cef7;
+    border-radius: 10px;
+}
+
+
+
 
 @keyframes icon {
     0% {
@@ -166,32 +172,18 @@ main {
     }
 }
 
-.details {
-    padding-bottom: 2rem;
+.error{
+    background-color: transparent;
+    color: red;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    width: 30%;
+    margin-top: 1rem;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-.hbox {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-}
-.hbox:not(last-child) {
-    border-bottom: 2px dotted #F0F0F0;
-}
-@media screen and (min-width: 780px) {
-   .weather {
-      width: 450px;
-   }
-   .city-desc {
-      margin-bottom: 3rem;
-      font-size: 1.3rem;
-   }
-   .desc {
-      justify-self: start;
-   }
-}
-
 .error {
     display: flex;
     justify-content: center;
@@ -220,24 +212,6 @@ main {
     .error-icon {
         width: 174px;
         height: auto;
-    }
-    .temperature .icon {
-        width: 150px;
-        height: 150px;
-        top: 5rem;
-    }
-    .temperature .num {
-        font-size: 4rem;
-    }
-    .temperature .metrics {
-        font-size: 2rem;
-    }
-    .city-desc {
-        font-size: 1.2rem;
-    }
-    .error p {
-        font-size: 1.2rem;
-        width: 100%;
     }
     
 }

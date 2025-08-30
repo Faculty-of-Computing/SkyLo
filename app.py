@@ -30,7 +30,9 @@ def init_db():
             pressure REAL,
             visibility REAL,
             icon TEXT,
-            last_updated INTEGER
+            last_updated INTEGER,
+            lon Real,
+            lat Real
             )
         ''')
         db.commit()
@@ -98,13 +100,15 @@ def index():
                 if current_time - row[8] < 1800:
                     weather = {
                         'city': row[0],
-                        'temperature': row[1],
+                        'temperature': int(row[1]),
                         'description': row[2],
                         'humidity': row[3],
                         'windspeed': row[4],
                         'pressure': row[5],
                         'visibility': row[6],
                         'icon': row[7],
+                        'lon': row[9],
+                        'lat': row[10]
                     }
                     conn.close()
                     return render_template("index.html", weather=weather)
@@ -115,9 +119,11 @@ def index():
             city_encoded = quote_plus(city)
             url = f"http://api.openweathermap.org/data/2.5/weather?q={city_encoded}&appid={API_KEY}&units=metric"
             response = requests.get(url)
+            
 
             if response.status_code == 200:
                 data = response.json()
+                
                 # Check if the response is for a country, not a city
                 if data.get('sys') and not data.get('main'):
                     weather = { 'error': 'This is not a valid city' }
@@ -125,19 +131,22 @@ def index():
                     return render_template("index.html", weather=weather)
                 if data.get('main') and data.get('weather'):
                     weather = {
-                        'temperature': data['main']['temp'],
+                        'temperature': int(data['main']['temp']),
                         'description': data['weather'][0]['description'],
                         'visibility': data['visibility'],
                         'windspeed': data['wind']['speed'],
                         'humidity': data['main']['humidity'],
                         'pressure': data['main']['pressure'],
                         'city': data['name'],
-                        'icon': get_cloud(data['weather'][0]['icon'])
+                        'icon': get_cloud(data['weather'][0]['icon']),
+                        'lon': data['coord']['lon'],
+                        'lat': data['coord']['lat'],
                     }
+                    
                     cursor.execute('''
-                        INSERT OR REPLACE INTO weather (city, temperature, description, humidity, windspeed, pressure, visibility, icon, last_updated) 
-                        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ''', (weather['city'], weather['temperature'], weather['description'], weather['humidity'], weather['windspeed'], weather['pressure'], weather['visibility'], weather['icon'], current_time))
+                        INSERT OR REPLACE INTO weather (city, temperature, description, humidity, windspeed, pressure, visibility, icon, last_updated, lon, lat) 
+                        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (weather['city'], weather['temperature'], weather['description'], weather['humidity'], weather['windspeed'], weather['pressure'], weather['visibility'], weather['icon'], current_time, weather['lon'], weather['lat'],))
 
                     conn.commit()
                     conn.close()
