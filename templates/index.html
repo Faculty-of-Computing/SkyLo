@@ -1,72 +1,114 @@
 <!Doctype html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href={{url_for('static', filename='css/style.css')}}>
     <!-- Removed inline style block for body. Styles moved to body tag. -->
-    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20n6f/Bj6A79S572LkUwCA/0yvLfnkG4dQR/rG+Nxlc="
+    crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        
     </head>
-    <body style="background-image: url('{{ url_for('static', filename='img/coastal.jpg') }}'); background-repeat: no-repeat; background-position: center center; background-attachment: fixed; background-size: cover; min-height: 100vh; margin: 0; font-family: Arial, Helvetica, sans-serif; color: #222;">
-         <main>
-             <div class="weather-app">
-                 <form method="get" action="/">
-                     <div class="input-group">
-                         <input type="search" name="city" id="city" value="" placeholder="City" />
-                         <button type="submit" class="search-btn">Search</button>
-                     </div>
-                 </form>
-                 {% if weather and not weather.error %}
-                 <div class="weather">
-                     <div class="temperature">
-                         <span class="num">{{weather.temperature}}</span><span class="metrics">°C</span>
-                         {% if weather.icon %}
-                         <img class="icon" src={{url_for('static', filename='img/' + weather.icon + '.png')}} alt="{{weather.description}}" width="200" height="200"/>
-                         {% endif %}
-                     </div>
+    <body style="padding: 0; margin: 0; font-family: Arial, Helvetica, sans-serif;">
+        <header>
+             <div class="logo"><span class="white">Sky</span><span class="blue">Lo</span></div>
+            <form class="form" method="get" action="/">
+                <div class="form-group">
+                    <input type="search" name="city" id="city" value="" placeholder="City" />
+                    <button type="submit" class="search">
+                        <img src={{url_for('static', filename='img/search.svg')}} alt="search" width="20" height="20" />
+                    </button>
+                </div>
                      
-                     <div class="weather-details">
-                         <div class="city-desc">
-                             <p class="city">
-                                 <img class="pin" src={{url_for('static', filename='img/map.png')}} alt="pin" width="30" height="30" />
-                                 <span>{{weather.city}}</span>
-                             </p>
-                             <p class="desc">{{weather.description}}</p>
-                         </div>
-                         
-                         <div class="details">
-                             <div class="hbox">
-                                 <p>Visibility</p>
-                                 <p>{{weather.visibility}}m</p>
-                             </div>
-                             <div class="hbox">
-                                 <p>Wind Speed</p>
-                                 <p>{{weather.windspeed}}km</p>
-                             </div>
-                             <div class="hbox">
-                                 <p>Pressure</p>
-                                 <p>{{weather.pressure}} Pa</p>
-                             </div>
-                             <div class="hbox">
-                                 <p>Humidity</p>
-                                 <p>{{weather.humidity}}%</p>
-                             </div>
-                         </div>
-                     </div>
+             </form>
+        </header>
+        {% if weather and not weather.error %}
+        <main id="map"></main>
+        {% endif %}
+        {% if weather and weather.error %}
+        <div class="error">
+            <img class="error-icon" src={{url_for('static', filename='img/bad-weather.png')}} alt="error" width="200" height="200"/>
+                 
+             <p>Oops! weather not found.</p>
+           
+        </div>
+        {% endif %}
+        
+       {% if weather and not weather.error %}
+        
+        <footer>
+            
+            <div class="details">
+                 <div class="hbox">
+                     <p>Visibility</p>
+                     <p>{{weather['visibility']}}m</p>
                  </div>
-                 {% endif %}
-                 <div class="error">
-                     {% if weather and weather.error %}
-                     <div class="icon-err">
-                         <img class="error-icon" src={{url_for('static', filename='img/bad-weather.png')}} alt="error" width="200" height="200"/>
-                         <p>Oops! something went wrong, try again</p>
-                       </div>
-                     
-                     {% endif %}
+                 <div class="hbox">
+                     <p>Wind Speed</p>
+                     <p>{{weather['windspeed']}}km</p>
+                 </div>
+                 <div class="hbox">
+                     <p>Pressure</p>
+                     <p>{{weather['pressure']}} Pa</p>
+                 </div>
+                 <div class="hbox">
+                     <p>Humidity</p>
+                     <p>{{weather['humidity']}}%</p>
                  </div>
              </div>
-         </main>
+        </footer>
+        
+        {% endif %}
+        
+        <script>
+
+            let latitude = `{{weather['lat']}}`;
+            let longitude = `{{weather['lon']}}`;
+            const zoomLevel = 7; 
+ 
+            
+
+            // Initialize the map on the 'map' div with the specified center and zoom
+            const map = L.map('map').setView([latitude, longitude], zoomLevel);
+
+            // Add the OpenStreetMap tile layer to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add a marker to the map at the specified coordinates
+            const marker = L.marker([latitude, longitude]).addTo(map);
+            
+
+            const src=`{{url_for('static', filename='img/' + weather['icon'] + '.png')}}`
+            
+            const report = `
+            <div class="popup" style="min-width: 300px">
+                <div class="popup-inner">
+                    <p class="popup-temp">{{weather['temperature']}}°C</p>
+                    <div>
+                         <img class="icon" src=${src} alt="{{weather['description']}}" width="100" height="100"/>
+                    </div>
+                    <p class="popup-desc">{{weather['city']}}, {{weather['description']}}</p>
+                </div>
+            </div>`
+
+            
+            marker.bindPopup(report).openPopup();
+
+
+    </script>
+        
          
     </body>
     
