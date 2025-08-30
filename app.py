@@ -17,7 +17,7 @@ def get_db():
     return db
 
 def init_db():
-    with app.app_context():
+    with app.app_context()
         db = get_db()
         cursor = db.cursor()
         cursor.execute('''
