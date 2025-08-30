@@ -110,6 +110,9 @@ def index():
                         'lon': row[9],
                         'lat': row[10]
                     }
+                    
+#                    print(weather)
+                    
                     conn.close()
                     return render_template("index.html", weather=weather)
             
@@ -120,7 +123,8 @@ def index():
             url = f"http://api.openweathermap.org/data/2.5/weather?q={city_encoded}&appid={API_KEY}&units=metric"
             response = requests.get(url)
             
-
+#            raise ExceptionType("Error")
+            
             if response.status_code == 200:
                 data = response.json()
                 

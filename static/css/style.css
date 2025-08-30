@@ -99,8 +99,8 @@ main {
     align-items: center;
 }
 .popup-temp {
-    font-size:3rem; 
-    font-weight: 100; 
+    font-size: 3rem; 
+    font-weight: 600; 
     text-align: center;
     margin-block-end: 0;
     margin-block-start:0;
@@ -177,36 +177,34 @@ footer {
 }
 
 .error{
-    background-color: transparent;
-    color: red;
+    height: 50vh;
     text-align: center;
     font-size: 2rem;
     font-weight: 600;
-    width: 30%;
+
     margin-top: 1rem;
     padding: 5px;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
 }
 .error {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    gap: 2rem;
 }
 
 .error-icon {
     width: 250px;
     height: 250px;;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    
     animation: icon 10000ms linear infinite both;
 }
 
 .error p {
     font-size: 1.5rem;
-    color: #ff1313;
+    color: #ef4242;
     text-align: center;
     width: 100%;
     
