@@ -1,6 +1,5 @@
 import sqlite3
 import time
-import os
 import requests
 from flask import Flask, g, render_template, request, send_from_directory
 import pycountry  # Requires installation: pip install pycountry
