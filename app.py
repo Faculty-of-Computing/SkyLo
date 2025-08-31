@@ -5,19 +5,16 @@ from flask import Flask, g, render_template, request, send_from_directory
 import pycountry  # Requires installation: pip install pycountry
 from urllib.parse import quote_plus
 from psycopg2 import pool
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-API_KEY = "ef0cc4d3880644acbd65f6218a3beed6"
-DATABASE_CONFIG = {
-    'dbname': 'weather_db',
-    'user': 'postgres',
-    'password': 'Arua08141',
-    'host': 'localhost',
-    'port': '5432'
-}
+API_KEY = os.getenv('API_KEY')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
-# Initialize connection pool
-db_pool = psycopg2.pool.SimpleConnectionPool(1, 20, **DATABASE_CONFIG)
+# Initialize connection pool using DATABASE_URL
+db_pool = psycopg2.pool.SimpleConnectionPool(1, 20, DATABASE_URL)
 
 def get_db():
     db = getattr(g, '_database', None)
