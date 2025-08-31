@@ -2,3 +2,4 @@
 requests
 gunicorn
 pycountry
+psycopg2-binary
