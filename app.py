@@ -3,9 +3,10 @@ import sqlite3
 import time
 
 import requests
-from flask import Flask, g, render_template, request, send_from_directory
+from flask import Flask, g, render_template, request, send_from_directory, jsonify
 
 app = Flask(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type'
 API_KEY = "ef0cc4d3880644acbd65f6218a3beed6"
 DATABASE = 'weather.db'
 
@@ -70,6 +71,8 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+
+        
 @app.route('/', methods=['GET'])
 def index():
     weather = None
@@ -108,7 +111,8 @@ def index():
                         'visibility': row[6],
                         'icon': row[7],
                         'lon': row[9],
-                        'lat': row[10]
+                        'lat': row[10],
+                        'key': API_KEY,
                     }
                     
 #                    print(weather)
@@ -145,6 +149,7 @@ def index():
                         'icon': get_cloud(data['weather'][0]['icon']),
                         'lon': data['coord']['lon'],
                         'lat': data['coord']['lat'],
+                        'key': API_KEY,
                     }
                     
                     cursor.execute('''
@@ -174,6 +179,28 @@ def index():
 def image_handler(filename):
     return send_from_directory('static/img', filename)
 
+
+
+@app.route('/latlng', methods=['POST'])
+def handle_latlng():
+    body = request.get_json()
+    lat = body['lat']
+    lng = body['lng']
+    
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&exclude=daily,hourly&appid={API_KEY}&units=metric"
+    response = requests.get(url)
+   
+    if response.status_code == 200:
+        data = response.json()
+        
+        weather = {
+            'temperature': int(data['main']['temp']),
+            'description': data['weather'][0]['description'],
+            'city': data['name'],
+        }
+            
+        return ({**weather})
+    return jsonify({ 'error': 'No data'})
 
 
 if __name__ == '__main__':
