@@ -1,20 +1,26 @@
-
-import sqlite3
+import psycopg2
 import time
-
 import requests
+
 from flask import Flask, g, render_template, request, send_from_directory, jsonify
+import pycountry  # Requires installation: pip install pycountry
+from urllib.parse import quote_plus
+from psycopg2 import pool
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-app.config['CORS_HEADERS'] = 'Content-Type'
-API_KEY = "ef0cc4d3880644acbd65f6218a3beed6"
-DATABASE = 'weather.db'
+API_KEY = os.getenv('API_KEY')
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+# Initialize connection pool using DATABASE_URL
+db_pool = psycopg2.pool.SimpleConnectionPool(1, 20, DATABASE_URL)
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE, timeout=10, check_same_thread=False)
-        db.execute('PRAGMA journal_mode=WAL;')
+        db = g._database = db_pool.getconn()
     return db
 
 def init_db():
@@ -22,23 +28,22 @@ def init_db():
         db = get_db()
         cursor = db.cursor()
         cursor.execute('''
-           CREATE TABLE IF NOT EXISTS weather(
-            city TEXT PRIMARY KEY,
-            temperature REAL,
-            description TEXT,
-            humidity INTEGER,
-            windspeed REAL,
-            pressure REAL,
-            visibility REAL,
-            icon TEXT,
-            last_updated INTEGER,
-            lon Real,
-            lat Real
+            CREATE TABLE IF NOT EXISTS weather (
+                city TEXT PRIMARY KEY,
+                temperature REAL,
+                description TEXT,
+                humidity INTEGER,
+                windspeed REAL,
+                pressure REAL,
+                visibility REAL,
+                icon TEXT,
+                last_updated INTEGER,
+                lon REAL,
+                lat REAL
             )
         ''')
         db.commit()
         cursor.close()
-
 
 def get_cloud(c):
     if c == '01d':
@@ -58,24 +63,23 @@ def get_cloud(c):
     elif c == '11d' or c == '11n':
         return 'thunder'
     elif c == '13d' or c == '13n':
-        return'snowy'
+        return 'snowy'
     elif c == '50d' or c == '50n':
         return 'foggy'
     else:
         return 'cloudy'
 
-
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
-        db.close()
+        db_pool.putconn(db)
 
 
         
 @app.route('/', methods=['GET'])
 def index():
-    weather = None
+    weather = {}
     # Get user's city from IP if not provided
     if request.method == 'GET':
         city = request.args.get('city', type=str)
@@ -91,18 +95,18 @@ def index():
             except Exception:
                 city = 'Uyo'
         try:
-            conn = sqlite3.connect("weather.db")
+            conn = get_db()
             cursor = conn.cursor()
 
-            cursor.execute("SELECT * FROM weather WHERE city like ?", (city,))
+            cursor.execute("SELECT * FROM weather WHERE city ILIKE %s", (city,))
             row = cursor.fetchone()
             
             current_time = int(time.time())
             if row:
-            # check if the data is older than 30 minutes (1800 sec)
+                # Check if the data is older than 30 minutes (1800 sec)
                 if current_time - row[8] < 1800:
                     weather = {
-                        'city': row[0],
+                        'city': row[0],  # This will now be "city, country"
                         'temperature': int(row[1]),
                         'description': row[2],
                         'humidity': row[3],
@@ -114,30 +118,25 @@ def index():
                         'lat': row[10],
                         'key': API_KEY,
                     }
-                    
-#                    print(weather)
-                    
-                    conn.close()
+                    cursor.close()
                     return render_template("index.html", weather=weather)
             
-            # city not in database and not searched within the 
-            # last 30 minutes, get weather report from API
-            from urllib.parse import quote_plus
+            # City not in database or older than 30 minutes, get weather report from API
             city_encoded = quote_plus(city)
             url = f"http://api.openweathermap.org/data/2.5/weather?q={city_encoded}&appid={API_KEY}&units=metric"
             response = requests.get(url)
-            
-#            raise ExceptionType("Error")
             
             if response.status_code == 200:
                 data = response.json()
                 
                 # Check if the response is for a country, not a city
                 if data.get('sys') and not data.get('main'):
-                    weather = { 'error': 'This is not a valid city' }
-                    conn.close()
+                    weather = {'error': 'This is not a valid city', 'icon': 'cloudy', 'lat': 0.0, 'lon': 0.0}
+                    cursor.close()
                     return render_template("index.html", weather=weather)
                 if data.get('main') and data.get('weather'):
+                    country_code = data['sys']['country']
+                    country_name = pycountry.countries.get(alpha_2=country_code).name if pycountry.countries.get(alpha_2=country_code) else 'Unknown Country'
                     weather = {
                         'temperature': int(data['main']['temp']),
                         'description': data['weather'][0]['description'],
@@ -145,7 +144,7 @@ def index():
                         'windspeed': data['wind']['speed'],
                         'humidity': data['main']['humidity'],
                         'pressure': data['main']['pressure'],
-                        'city': data['name'],
+                        'city': f"{data['name']}, {country_name}",  # Combine city and country name
                         'icon': get_cloud(data['weather'][0]['icon']),
                         'lon': data['coord']['lon'],
                         'lat': data['coord']['lat'],
@@ -153,32 +152,42 @@ def index():
                     }
                     
                     cursor.execute('''
-                        INSERT OR REPLACE INTO weather (city, temperature, description, humidity, windspeed, pressure, visibility, icon, last_updated, lon, lat) 
-                        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ''', (weather['city'], weather['temperature'], weather['description'], weather['humidity'], weather['windspeed'], weather['pressure'], weather['visibility'], weather['icon'], current_time, weather['lon'], weather['lat'],))
-
+                        INSERT INTO weather (city, temperature, description, humidity, windspeed, pressure, visibility, icon, last_updated, lon, lat)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (city) DO UPDATE
+                        SET temperature = EXCLUDED.temperature,
+                            description = EXCLUDED.description,
+                            humidity = EXCLUDED.humidity,
+                            windspeed = EXCLUDED.windspeed,
+                            pressure = EXCLUDED.pressure,
+                            visibility = EXCLUDED.visibility,
+                            icon = EXCLUDED.icon,
+                            last_updated = EXCLUDED.last_updated,
+                            lon = EXCLUDED.lon,
+                            lat = EXCLUDED.lat
+                    ''', (weather['city'], weather['temperature'], weather['description'], weather['humidity'], weather['windspeed'], weather['pressure'], weather['visibility'], weather['icon'], current_time, weather['lon'], weather['lat']))
                     conn.commit()
-                    conn.close()
+                    cursor.close()
                     return render_template("index.html", weather=weather)
                 else:
-                    weather = { 'error': 'City not Found' }
-                    conn.close()
+                    weather = {'error': 'City not Found', 'icon': 'cloudy', 'lat': 0.0, 'lon': 0.0}
+                    cursor.close()
                     return render_template("index.html", weather=weather)
             else:
-                weather = { 'error': 'City not Found' }
-                conn.close()
+                weather = {'error': 'City not Found', 'icon': 'cloudy', 'lat': 0.0, 'lon': 0.0}
+                cursor.close()
                 return render_template("index.html", weather=weather)
         
         except Exception as e:
             print(e)
-            weather = {'error': 'Unexpected exception'}
+            weather = {'error': 'Unexpected exception', 'icon': 'cloudy', 'lat': 0.0, 'lon': 0.0}
+            if 'cursor' in locals():
+                cursor.close()
             return render_template("index.html", weather=weather)
-
 
 @app.route('/images/<path:filename>')
 def image_handler(filename):
     return send_from_directory('static/img', filename)
-
 
 
 @app.route('/latlng', methods=['POST'])
@@ -206,4 +215,3 @@ def handle_latlng():
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
-    

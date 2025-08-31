@@ -14,9 +14,23 @@ body {
 }
 
 header {
-    padding: 1rem 2rem 1rem 2rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
     background: #b5d1e5;
+    position: sticky;
     
+}
+.logo {
+    display:flex;
+    align-items: center;
+    font-size: 1rem;
+    margin-top: 1rem;
+    font-weight: 900;
+}
+.white {
+    color: rgb(9, 49, 92);
+}
+.blue {
+    color: #01162c;
 }
 form {
     display: flex;
@@ -114,6 +128,7 @@ main {
 
 .leaflet-popup-content p {
     margin: 0 !important;
+    position: static;
 }
 
 

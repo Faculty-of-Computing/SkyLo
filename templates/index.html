@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
+    <title>SkyLo</title>
     <link rel="stylesheet" href={{url_for('static', filename='css/style.css')}}>
     <!-- Removed inline style block for body. Styles moved to body tag. -->
     <!-- Leaflet CSS -->
@@ -20,6 +20,7 @@
     </head>
     <body style="padding: 0; margin: 0; font-family: Arial, Helvetica, sans-serif;">
         <header>
+             <div class="logo"><span class="white">Sky</span><span class="blue">Lo</span></div>
             <form class="form" method="get" action="/">
                 <div class="form-group">
                     <input type="search" name="city" id="city" value="" placeholder="City" />
@@ -37,7 +38,7 @@
         <div class="error">
             <img class="error-icon" src={{url_for('static', filename='img/bad-weather.png')}} alt="error" width="200" height="200"/>
                  
-             <p>Oops! something went wrong, try again</p>
+             <p>Oops! weather not found.</p>
            
         </div>
         {% endif %}
@@ -49,19 +50,19 @@
             <div class="details">
                  <div class="hbox">
                      <p>Visibility</p>
-                     <p>{{weather.visibility}}m</p>
+                     <p>{{weather['visibility']}}m</p>
                  </div>
                  <div class="hbox">
                      <p>Wind Speed</p>
-                     <p>{{weather.windspeed}}km</p>
+                     <p>{{weather['windspeed']}}km</p>
                  </div>
                  <div class="hbox">
                      <p>Pressure</p>
-                     <p>{{weather.pressure}} Pa</p>
+                     <p>{{weather['pressure']}} Pa</p>
                  </div>
                  <div class="hbox">
                      <p>Humidity</p>
-                     <p>{{weather.humidity}}%</p>
+                     <p>{{weather['humidity']}}%</p>
                  </div>
              </div>
         </footer>
@@ -70,8 +71,8 @@
         
         <script>
 
-            let latitude = `{{weather.lat}}`;
-            let longitude = `{{weather.lon}}`;
+            let latitude = `{{weather['lat']}}`;
+            let longitude = `{{weather['lon']}}`;
             const zoomLevel = 7; 
  
 
@@ -88,16 +89,16 @@
             const marker = L.marker([latitude, longitude]).addTo(map);
             
 
-            const src=`{{url_for('static', filename='img/'  + weather.icon + '.png')}}`
+            const src=`{{url_for('static', filename='img/' + weather['icon'] + '.png')}}`
             
             const report = `
             <div class="popup" style="min-width: 300px">
                 <div class="popup-inner">
-                    <p class="popup-temp">{{weather.temperature}}°C</p>
+                    <p class="popup-temp">{{weather['temperature']}}°C</p>
                     <div>
-                         <img class="icon" src=${src} alt="{{weather.description}}" width="100" height="100"/>
+                         <img class="icon" src=${src} alt="{{weather['description']}}" width="100" height="100"/>
                     </div>
-                    <p class="popup-desc">{{weather.city}}, {{weather.description}}</p>
+                    <p class="popup-desc">{{weather['city']}}, {{weather['description']}}</p>
                 </div>
             </div>`
 
