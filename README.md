@@ -1,24 +1,28 @@
-# Group_4 Project:  Weather Web Application.
+# SkyLo: A Weather Web Application.
 
 ## Problem Statement: Create a web-based weather application that displays current weather conditions and forecasts for a given location.
 
 # Weather Web Application
 
-A web-based weather application that allows users to view current weather conditions and forecasts for any location. Built by Group 4 as part of the Faculty of Computing project.
+SkyLo is a web-based weather application built with Flask and PostgreSQL, providing real-time weather updates for cities worldwide. It integrates with the OpenWeatherMap API to fetch weather data and displays it with an interactive map powered by Leaflet. The application caches data in a PostgreSQL database to optimize API usage and supports geolocation-based city detection using the user's IP address. This project is hosted on Railway.com for both the frontend and the database.
 
 ## Features
 
-- Search for weather data by city or location
-- View current weather conditions and 5-day forecasts
-- User-friendly interface for easy navigation
-- Stores most searched and most recently searched locations in a local database
+- Real-Time Weather Data: Displays current temperature, humidity, wind speed, pressure, visibility, and weather description for any city.
+- Interactive Map: Utilizes Leaflet to display the city's location, accompanied by a popup containing weather details.
+- IP-Based Geolocation: Automatically detects the user's city using the ip-api.com service if no city is specified.
+- Data Caching: Stores weather data in a PostgreSQL database, updating only when data is older than 30 minutes to reduce API calls.
+- Responsive Design: Adapts to various screen sizes for a seamless experience on mobile and desktop devices.
+- Error Handling: Gracefully handles invalid city inputs and API errors with user-friendly messages.
+- Secure Configuration: Utilizes environment variables for sensitive data, such as API keys and database URLs, which are managed via Railway's dashboard.
 
 ## Technologies Used
 
-- Python (Flask)
-- HTML/CSS (templates)
-- SQLite for local data storage
-- OpenWeatherMap API for weather data
+- Backend: Flask (Python web framework), PostgreSQL (database), psycopg2 (PostgreSQL adapter)
+- Frontend: HTML, CSS, JavaScript, Leaflet (interactive maps)
+- APIs: OpenWeatherMap (weather data), ip-api.com (geolocation)
+- Deployment: Gunicorn (WSGI server), Railway.com (hosting platform for frontend and database)
+- Other Libraries: pycountry (country name conversion), python-dotenv (environment variable management)
 
 ## How It Works
 
@@ -47,3 +51,13 @@ A web-based weather application that allows users to view current weather condit
 ## License
 
 This project is for educational purposes only.
+
+## Acknowledgements
+
+- OpenWeatherMap for weather data.
+- ip-api.com for geolocation services.
+- Leaflet for interactive maps.
+- Railway for seamless hosting and database management.
+
+## Developers
+Developed by 0'22/0'23 computer Science Group_4 for 200L UUY-CSC222 Project, University of Uyo, Uyo. 
