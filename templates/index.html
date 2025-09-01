@@ -72,7 +72,9 @@
 
             let latitude = `{{weather['lat']}}`;
             let longitude = `{{weather['lon']}}`;
-            const zoomLevel = 7;  // Set a default zoom level
+            const zoomLevel = 7; 
+ 
+            
 
             // Initialize the map on the 'map' div with the specified center and zoom
             const map = L.map('map').setView([latitude, longitude], zoomLevel);
@@ -102,7 +104,48 @@
 
             
             marker.bindPopup(report).openPopup();
+            
+            map.on('click', onMapClick);
 
+            var popup = L.popup();
+            const API_KEY = `{{weather.key}}`;
+
+            async function onMapClick(e) {
+                const data = await getWeather(e, API_KEY);
+                
+                if(data && !data.error) {
+                    const {city, description, temperature} = data;
+                    popup.setLatLng(e.latlng).setContent(`${city}, ${temperature}°C ${description}`).openOn(map);
+                }
+                
+                
+            }
+            
+            async function getWeather(e, key) {
+                const headers = {
+                    'Content-Type':'application/json',
+                    'Access-Control-Allow-Origin':'*',
+                    'Access-Control-Allow-Methods':'POST,GET'
+                }
+                
+                try {
+                    const resp = await fetch (`http://localhost:5000/latlng`, {
+                        mode: 'cors',
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({ lat: e.latlng.lat, lng: e.latlng.lng })
+                    })
+                    if(resp.ok) {
+                        const data = await resp.json();
+                        return data;
+                    }
+                    return resp;
+                    
+                } catch(error) {
+                    return { error };
+                }
+            }
+            
 
     </script>
         

@@ -1,7 +1,7 @@
 import psycopg2
 import time
 import requests
-from flask import Flask, g, render_template, request, send_from_directory
+from flask import Flask, g, render_template, request, send_from_directory, jsonify
 import pycountry  # Requires installation: pip install pycountry
 from urllib.parse import quote_plus
 from psycopg2 import pool
@@ -74,6 +74,8 @@ def close_connection(exception):
     if db is not None:
         db_pool.putconn(db)
 
+
+        
 @app.route('/', methods=['GET'])
 def index():
     weather = {}
@@ -112,7 +114,8 @@ def index():
                         'visibility': row[6],
                         'icon': row[7],
                         'lon': row[9],
-                        'lat': row[10]
+                        'lat': row[10],
+                        'key': API_KEY,
                     }
                     cursor.close()
                     return render_template("index.html", weather=weather)
@@ -144,6 +147,7 @@ def index():
                         'icon': get_cloud(data['weather'][0]['icon']),
                         'lon': data['coord']['lon'],
                         'lat': data['coord']['lat'],
+                        'key': API_KEY,
                     }
                     
                     cursor.execute('''
@@ -183,6 +187,29 @@ def index():
 @app.route('/images/<path:filename>')
 def image_handler(filename):
     return send_from_directory('static/img', filename)
+
+
+@app.route('/latlng', methods=['POST'])
+def handle_latlng():
+    body = request.get_json()
+    lat = body['lat']
+    lng = body['lng']
+    
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&exclude=daily,hourly&appid={API_KEY}&units=metric"
+    response = requests.get(url)
+   
+    if response.status_code == 200:
+        data = response.json()
+        
+        weather = {
+            'temperature': int(data['main']['temp']),
+            'description': data['weather'][0]['description'],
+            'city': data['name'],
+        }
+            
+        return ({**weather})
+    return jsonify({ 'error': 'No data'})
+
 
 if __name__ == '__main__':
     init_db()
