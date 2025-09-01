@@ -11,13 +11,12 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""/>
     <!-- Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    <!-- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20n6f/Bj6A79S572LkUwCA/0yvLfnkG4dQR/rG+Nxlc="
-    crossorigin=""></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    crossorigin=""></script> -->
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" /> -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
         
-    </head>
     <body style="padding: 0; margin: 0; font-family: Arial, Helvetica, sans-serif;">
         <header>
              <div class="logo"><span class="white">Sky</span><span class="blue">Lo</span></div>
@@ -73,9 +72,7 @@
 
             let latitude = `{{weather['lat']}}`;
             let longitude = `{{weather['lon']}}`;
-            const zoomLevel = 7; 
- 
-            
+            const zoomLevel = 7;  // Set a default zoom level
 
             // Initialize the map on the 'map' div with the specified center and zoom
             const map = L.map('map').setView([latitude, longitude], zoomLevel);
