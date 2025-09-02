@@ -129,7 +129,7 @@
                 }
                 
                 try {
-                    const resp = await fetch (`http://localhost:5000/latlng`, {
+                    const resp = await fetch (`https://${window.location.hostname}/latlng`, {
                         mode: 'cors',
                         method: 'POST',
                         headers,
