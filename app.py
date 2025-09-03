@@ -2,7 +2,7 @@ import psycopg2
 import time
 import requests
 from flask import Flask, g, render_template, request, send_from_directory, jsonify
-from werkzeug.middleware.proxy_fix import ProxyFix  # Added for proper IP handling
+from werkzeug.middleware.proxy_fix import ProxyFix  # For proper IP handling
 import pycountry  # Requires installation: pip install pycountry
 from urllib.parse import quote_plus
 from psycopg2 import pool
@@ -12,7 +12,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # Handle X-Forwarded-For for proxies
+# Configure ProxyFix to handle up to 2 proxies (Railway + potential CDN like Cloudflare)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2, x_proto=1, x_host=1, x_port=1)
 API_KEY = os.getenv('API_KEY')
 DATABASE_URL = os.getenv('DATABASE_URL')
 
@@ -45,41 +46,30 @@ def init_db():
                 lat REAL
             )
         ''')
-        # Create IP cache table to store IP-to-city mappings
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS ip_cache (
-                ip TEXT PRIMARY KEY,
-                city TEXT,
-                country TEXT,
-                last_updated INTEGER
-            )
-        ''')
         db.commit()
         cursor.close()
 
 def get_cloud(c):
-    if c == '01d':
-        return 'sunny'
-    elif c == '01n':
-        return 'moon'
-    elif c == '02d' or c == '02n':
-        return 'cloudy'
-    elif c == '03d' or c == '03n':
-        return 'scattered'
-    elif c == '04d' or c == '04n':
-        return 'broken'
-    elif c == '09d' or c == '09n':
-        return 'rainy'
-    elif c == '10d' or c == '10n':
-        return 'rainy'
-    elif c == '11d' or c == '11n':
-        return 'thunder'
-    elif c == '13d' or c == '13n':
-        return 'snowy'
-    elif c == '50d' or c == '50n':
-        return 'foggy'
-    else:
-        return 'cloudy'
+    return {
+        '01d': 'sunny',
+        '01n': 'moon',
+        '02d': 'cloudy',
+        '02n': 'cloudy',
+        '03d': 'scattered',
+        '03n': 'scattered',
+        '04d': 'broken',
+        '04n': 'broken',
+        '09d': 'rainy',
+        '09n': 'rainy',
+        '10d': 'rainy',
+        '10n': 'rainy',
+        '11d': 'thunder',
+        '11n': 'thunder',
+        '13d': 'snowy',
+        '13n': 'snowy',
+        '50d': 'foggy',
+        '50n': 'foggy'
+    }.get(c, 'cloudy')
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -96,56 +86,40 @@ def index():
             try:
                 # Get client IP, accounting for proxies
                 ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-                print(f"Client IP: {ip}")  # Debug log
-                conn = get_db()
-                cursor = conn.cursor()
-                
-                # Check IP cache
-                cursor.execute("SELECT city, last_updated FROM ip_cache WHERE ip = %s", (ip,))
-                ip_cache = cursor.fetchone()
-                current_time = int(time.time())
-                
-                if ip_cache and (current_time - ip_cache[1] < 86400):  # Cache valid for 24 hours
-                    city = ip_cache[0]
-                    print(f"Using cached city for IP {ip}: {city}")
+                # Log all relevant headers for debugging
+                print(f"Client IP: {ip}")
+                print(f"Full Headers: {dict(request.headers)}")
+                # If X-Forwarded-For contains multiple IPs, take the leftmost (client IP)
+                if ip and ',' in ip:
+                    ip = ip.split(',')[0].strip()
+                    print(f"Parsed Client IP from X-Forwarded-For: {ip}")
+
+                # Try ip-api.com first
+                geo_resp = requests.get(f'http://ip-api.com/json/{ip}')
+                print(f"ip-api.com response: {geo_resp.status_code}, {geo_resp.text}")
+                if geo_resp.status_code == 200 and geo_resp.json().get('status') != 'fail':
+                    geo_data = geo_resp.json()
+                    city = geo_data.get('city', 'Uyo')
+                    print(f"ip-api.com city: {city}")
                 else:
-                    # Try ip-api.com first
-                    geo_resp = requests.get(f'http://ip-api.com/json/{ip}')
-                    print(f"ip-api.com response: {geo_resp.status_code}, {geo_resp.text}")  # Debug log
+                    # Fallback to ipinfo.io
+                    geo_resp = requests.get(f'https://ipinfo.io/{ip}/json')
+                    print(f"ipinfo.io response: {geo_resp.status_code}, {geo_resp.text}")
                     if geo_resp.status_code == 200:
                         geo_data = geo_resp.json()
-                        if geo_data.get('status') != 'fail':
-                            city = geo_data.get('city', 'Uyo')
-                            country = geo_data.get('country', 'Unknown Country')
-                        else:
-                            city = 'Uyo'
-                            country = 'Unknown Country'
+                        city = geo_data.get('city', 'Uyo')
+                        print(f"ipinfo.io city: {city}")
                     else:
-                        # Fallback to ipinfo.io
-                        geo_resp = requests.get(f'https://ipinfo.io/{ip}/json')
-                        print(f"ipinfo.io response: {geo_resp.status_code}, {geo_resp.text}")  # Debug log
+                        # Final fallback to freegeoip.app
+                        geo_resp = requests.get(f'https://freegeoip.app/json/{ip}')
+                        print(f"freegeoip.app response: {geo_resp.status_code}, {geo_resp.text}")
                         if geo_resp.status_code == 200:
                             geo_data = geo_resp.json()
                             city = geo_data.get('city', 'Uyo')
-                            country = geo_data.get('country', 'Unknown Country')
-                            if country and len(country) == 2:  # Convert country code to name
-                                country = pycountry.countries.get(alpha_2=country).name if pycountry.countries.get(alpha_2=country) else 'Unknown Country'
+                            print(f"freegeoip.app city: {city}")
                         else:
                             city = 'Uyo'
-                            country = 'Unknown Country'
-                    
-                    # Update IP cache
-                    cursor.execute('''
-                        INSERT INTO ip_cache (ip, city, country, last_updated)
-                        VALUES (%s, %s, %s, %s)
-                        ON CONFLICT (ip) DO UPDATE
-                        SET city = EXCLUDED.city,
-                            country = EXCLUDED.country,
-                            last_updated = EXCLUDED.last_updated
-                    ''', (ip, city, country, current_time))
-                    conn.commit()
-                
-                cursor.close()
+                            print("All geolocation APIs failed, defaulting to Uyo")
             except Exception as e:
                 print(f"Geolocation error: {e}")
                 city = 'Uyo'
@@ -265,7 +239,6 @@ def handle_latlng():
     except Exception as e:
         print(f"LatLng API error: {e}")
         return jsonify({'error': 'Unexpected exception'})
-
 
 if __name__ == '__main__':
     init_db()
