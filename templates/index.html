@@ -146,17 +146,6 @@
                 }
             }
             
-                        if (!weather.city || weather.error) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    fetch('/latlng', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ lat: position.coords.latitude, lng: position.coords.longitude })
-                    })
-                    .then(response => response.json())
-                    .then(data => console.log(data));
-                }, () => console.log("Geolocation permission denied"));
-            }
 
     </script>
         
